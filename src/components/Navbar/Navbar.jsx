@@ -4,19 +4,25 @@ import { assets } from "../../assets/assets.js";
 import { Link } from "react-router-dom";
 import { StoreContext } from "../../context/StoreContext.jsx";
 import { useNavigate } from "react-router-dom";
+import MyOrders from "../../pages/MyOrders/MyOrders.jsx";
 
 const Navbar = ({setShowLogin}) => {
 
   const {menu, setMenu} = useState("menu");
 
-  const {getTotalCartAmount, token, setToken} = useContext(StoreContext);
+  const {getTotalCartAmount, token, setToken, clearCart} = useContext(StoreContext);
 
   const navigate = useNavigate();
 
   const logout = () => {
      localStorage.removeItem("token");
      setToken("");
+     clearCart();
      navigate("/");
+  }
+
+  const goToOrders = () => {
+    navigate("/myorders");
   }
 
   return (
@@ -38,7 +44,7 @@ const Navbar = ({setShowLogin}) => {
         :<div className="navbar-profile">
            <img src={assets.profile_icon} alt="" />
            <ul className="nav-profile-dropdown">
-             <li><img src={assets.bag_icon} alt="" /><p>Orders</p></li>
+             <li onClick={goToOrders}><img src={assets.bag_icon} alt="" /><p>Orders</p></li>
              <hr />
              <li onClick={logout}><img src={assets.logout_icon} alt="" /><p>Logout</p></li>
            </ul>
