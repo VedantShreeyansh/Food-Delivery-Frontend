@@ -4,51 +4,70 @@ import { assets } from "../../assets/assets.js";
 import { Link } from "react-router-dom";
 import { StoreContext } from "../../context/StoreContext.jsx";
 import { useNavigate } from "react-router-dom";
-import MyOrders from "../../pages/MyOrders/MyOrders.jsx";
 
-const Navbar = ({setShowLogin}) => {
+const Navbar = ({ setShowLogin, onSearch }) => {
+  const [menu, setMenu] = useState("menu");
+  const [search, setSearch] = useState(""); // Add search state
 
-  const {menu, setMenu} = useState("menu");
-
-  const {getTotalCartAmount, token, setToken, clearCart} = useContext(StoreContext);
+  const { getTotalCartAmount, token, setToken, clearCart } = useContext(StoreContext);
 
   const navigate = useNavigate();
 
   const logout = () => {
-     localStorage.removeItem("token");
-     setToken("");
-     clearCart();
-     navigate("/");
-  }
+    localStorage.removeItem("token");
+    setToken("");
+    clearCart();
+    navigate("/");
+  };
 
   const goToOrders = () => {
     navigate("/myorders");
-  }
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+    if (onSearch) {
+      onSearch(e.target.value);
+    }
+  };
 
   return (
     <div className="navbar">
-      <Link to='/'><img src={assets.logo} alt="" className="logo"></img></Link>
+      <Link to="/"><img src={assets.logo} alt="" className="logo" /></Link>
       <ul className="navbar-menu">
-        <Link to="/" onClick={()=>setMenu("home")}  className={menu==="home"?"active":""}>home</Link>
-        <a href="#explore-menu" onClick={()=>setMenu("menu")} className={menu==="menu"?"active":""}>menu</a>
-        <a href="#app-download" onClick={()=>setMenu("mobile-app")} className={menu==="mobile-app"?"active":""}>mobile-app</a>
-        <a href="#footer" onClick={()=>setMenu("contact-us")} className={menu==="contact-us"?"active":""}>contact-us</a>
+        <Link to="/" onClick={() => setMenu("home")} className={menu === "home" ? "active" : ""}>home</Link>
+        <a href="#explore-menu" onClick={() => setMenu("menu")} className={menu === "menu" ? "active" : ""}>menu</a>
+        <a href="#app-download" onClick={() => setMenu("mobile-app")} className={menu === "mobile-app" ? "active" : ""}>mobile-app</a>
+        <a href="#footer" onClick={() => setMenu("contact-us")} className={menu === "contact-us" ? "active" : ""}>contact-us</a>
       </ul>
       <div className="navbar-right">
-        <img src={assets.search_icon} alt="" />
-        <div className="navbar-search-icon">
-          <Link to='/cart'><img src={assets.basket_icon} alt="" /></Link>
-          <div className={getTotalCartAmount()===0?"":"dot"}></div>
+        {/* Search Bar */}
+        <div className="navbar-search-bar">
+          <input
+            type="text"
+            placeholder="Search food..."
+            value={search}
+            onChange={handleSearchChange}
+          />
+          <img src={assets.search_icon} alt="Search" />
         </div>
-        {!token?<button onClick={()=>setShowLogin(true)}>sign in</button>
-        :<div className="navbar-profile">
-           <img src={assets.profile_icon} alt="" />
-           <ul className="nav-profile-dropdown">
-             <li onClick={goToOrders}><img src={assets.bag_icon} alt="" /><p>Orders</p></li>
-             <hr />
-             <li onClick={logout}><img src={assets.logout_icon} alt="" /><p>Logout</p></li>
-           </ul>
-        </div>}
+        <div className="navbar-search-icon">
+          <Link to="/cart"><img src={assets.basket_icon} alt="" /></Link>
+          <div className={getTotalCartAmount() === 0 ? "" : "dot"}></div>
+        </div>
+        {!token ? (
+          <button onClick={() => setShowLogin(true)}>sign in</button>
+        ) : (
+          <div className="navbar-profile">
+            <img src={assets.profile_icon} alt="" />
+            <ul className="nav-profile-dropdown">
+              <li onClick={goToOrders}><img src={assets.bag_icon} alt="" /><p>Orders</p></li>
+              <hr />
+              <li onClick={logout}><img src={assets.logout_icon} alt="" /><p>Logout</p></li>
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );
